@@ -9,6 +9,7 @@ from passlib.context import CryptContext
 from jose import JWTError,jwt
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from config import SECRET_KEY
+from fastapi.middleware.cors import CORSMiddleware
 
 
 models.Base.metadata.create_all(bind=engine)
@@ -251,3 +252,12 @@ def login(user: UserCreate, db: Session = Depends(get_db)):
         "access_token": token,
         "token_type": "bearer",
     }
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://smart-task-manager-api-wine.vercel.app"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
