@@ -18,7 +18,8 @@ function updateAuthStatus() {
 async function apiRequest(path, options = {}, requiresAuth = false) {
   const headers = {
     "Content-Type": "application/json",
-    ...(options.headers || {}),
+    "Accept": "application/json",
+    ...(options.headers || {})
   };
 
   if (requiresAuth) {
@@ -29,16 +30,15 @@ async function apiRequest(path, options = {}, requiresAuth = false) {
   }
 
   const response = await fetch(`${API}${path}`, {
+    mode: "cors",
     ...options,
-    headers,
+    headers
   });
 
-  let data;
+  let data = {};
   try {
     data = await response.json();
-  } catch {
-    data = {};
-  }
+  } catch {}
 
   if (!response.ok) {
     throw new Error(data.detail || "Request failed");
@@ -58,7 +58,7 @@ async function register() {
 
     await apiRequest("/register", {
       method: "POST",
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password })
     });
 
     setMessage("Registration successful. Now login.");
@@ -78,13 +78,13 @@ async function login() {
 
     const data = await apiRequest("/login", {
       method: "POST",
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password })
     });
 
     token = data.access_token || "";
     localStorage.setItem("token", token);
-    updateAuthStatus();
 
+    updateAuthStatus();
     setMessage("Login successful.");
   } catch (err) {
     setMessage(err.message, true);
@@ -110,13 +110,14 @@ async function createTask() {
           title,
           completed,
           priority,
-          deadline,
-        }),
+          deadline
+        })
       },
       true
     );
 
     setMessage("Task created successfully.");
+
     $("title").value = "";
     $("priority").value = "";
     $("deadline").value = "";
@@ -132,6 +133,7 @@ async function getTasks() {
   try {
     const tasks = await apiRequest("/tasks", {}, true);
     const list = $("taskList");
+
     list.innerHTML = "";
 
     if (!tasks.length) {
@@ -141,13 +143,16 @@ async function getTasks() {
 
     tasks.forEach((task) => {
       const li = document.createElement("li");
+
       li.className = "task-item";
+
       li.innerHTML = `
         <strong>${task.title}</strong>
         <span>Priority: ${task.priority ?? "none"}</span>
         <span>Deadline: ${task.deadline ?? "none"}</span>
         <span>Status: ${task.completed ? "Completed" : "Pending"}</span>
       `;
+
       list.appendChild(li);
     });
 
@@ -159,13 +164,17 @@ async function getTasks() {
 
 function saveApiBase() {
   const value = $("apiBase").value.trim();
+
   API = value || DEFAULT_API;
+
   localStorage.setItem("apiBase", API);
+
   setMessage(`API URL set to: ${API}`);
 }
 
 function init() {
   $("apiBase").value = API;
+
   updateAuthStatus();
 
   $("saveApiBtn").addEventListener("click", saveApiBase);
