@@ -10,17 +10,18 @@ from jose import JWTError,jwt
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from config import SECRET_KEY
 import os
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi import Request
 import time
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
-
+from fastapi.middleware.cors import CORSMiddleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://smart-task-manager-api-wine.vercel.app"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
