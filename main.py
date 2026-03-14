@@ -12,8 +12,7 @@ from config import SECRET_KEY
 import os
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import Request
-
-
+import time
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -21,9 +20,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://smart-task-manager-api-wine.vercel.app"
-    ],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
